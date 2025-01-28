@@ -50,6 +50,7 @@ The `disc` patch has the following parameters:
 A `disc` patch can also have a `normal` element, defining the normal vector of the disc.
 If omitted, the normal vector is assumed to be `(0, 0, 1)`.
 To set this, add a child element to the patch as `<normal>1.0,0.0,0.0</normal>`.
+Note: the `disc` really is a 2D disc, not a solid sphere even if the PhysiCell simulation is 3D.
 
 ### `annulus`
 The `annulus` patch has identical parameters to the `disc` patch, but with `radius` replaced by `inner_radius` and `outer_radius`.
@@ -92,7 +93,7 @@ Possible values are "true", "false", "0", and "1".
 Add the following to the patch element to set: `<restrict_to_domain>false</restrict_to_domain>`.
 
 ### Carveouts
-Every patch type can also include a `<carveouts>` element, which specifies regions where cells should not be placed.
+Every patch type can also include a `<carveout_patches>` element, which specifies regions where cells should not be placed.
 The currently supported carveouts are `disc`, `annulus`, and `rectangle`.
 These follow the same structure as the patches above, but do not contain a `number` element.
 `disc` and `annulus` carveouts cannot have a `normal` element, they are assumed to be parallel to the xy-plane.
