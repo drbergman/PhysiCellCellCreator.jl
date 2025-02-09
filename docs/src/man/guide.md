@@ -128,7 +128,6 @@ If omitted, it is assumed to be 100.
 Add the following to the patch element (not the carveout, but the patch itself) to set: `<max_fails>100</max_fails>`.
 
 ## Example XML
-
 A full example XML is shown below.
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
