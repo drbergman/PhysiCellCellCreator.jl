@@ -93,6 +93,25 @@ function parseMaxFails(patch::XMLElement)
     return parse(Int, content(max_fails))
 end
 
+function parseRectangleParameters(patch::XMLElement)
+    x0, y0, z0 = parseCenter(patch)
+    width = parseRectangleSize(patch, x0, "width", "x1")
+    height = parseRectangleSize(patch, y0, "height", "y1")
+    return x0, y0, z0, width, height
+end
+
+function parseRectangleSize(patch::XMLElement, c0::Float64, size_name::String, c1_name::String)
+    size_element = find_element(patch, size_name)
+    if !isnothing(size_element)
+        return parse(Float64, content(size_element))
+    end
+    c1 = find_element(patch, c1_name)
+    if isnothing(c1)
+        throw(ArgumentError("Rectangle patch must have either a $(size_name) or $(c1_name) element."))
+    end
+    return parse(Float64, content(c1)) - c0
+end
+
 abstract type PatchCarveout end
 
 struct DiscCarveout <: PatchCarveout
@@ -144,9 +163,7 @@ function parseCarveoutPatchCollection(patch_collection::XMLElement)
             outer_radius = parse(Float64, find_element(patch, "outer_radius") |> content)
             push!(carveouts, AnnulusCarveout(x0, y0, z0, inner_radius, outer_radius))
         elseif patch_type == "rectangle"
-            x0, y0, z0 = parseCenter(patch)
-            width = parse(Float64, find_element(patch, "width") |> content)
-            height = parse(Float64, find_element(patch, "height") |> content)
+            x0, y0, z0, width, height = parseRectangleParameters(patch)
             push!(carveouts, RectangleCarveout(x0, y0, z0, width, height))
         else
             throw(ArgumentError("Patch type $(patch_type) is not supported."))
@@ -252,9 +269,7 @@ function generatePatch(::Type{AnnulusPatch}, patch::XMLElement, cell_type::Strin
 end
 
 function generatePatch(::Type{RectanglePatch}, patch::XMLElement, cell_type::String, path_to_ic_cell_file::String, domain_dict::Dict{String,Float64})
-    x0, y0, z0 = parseCenter(patch)
-    width = parse(Float64, find_element(patch, "width") |> content)
-    height = parse(Float64, find_element(patch, "height") |> content)
+    x0, y0, z0, width, height = parseRectangleParameters(patch)
     number = parse(Int, find_element(patch, "number") |> content)
     restrict_to_domain = parseRestrictToDomain(patch, cell_type)
     max_fails = parseMaxFails(patch)
@@ -348,7 +363,7 @@ function createICCellXMLTemplate(path_to_folder::String)
     set_attribute(e_rectangles, "type", "rectangle")
     e_patch = new_child(e_rectangles, "patch")
     set_attribute(e_patch, "ID", "1")
-    for (name, value) in [("x0", "-50.0"), ("y0", "-50.0"), ("z0", "0.0"), ("width", "100.0"), ("height", "100.0"), ("number", "10")]
+    for (name, value) in [("x0", "-50.0"), ("y0", "-50.0"), ("z0", "0.0"), ("x1", "50.0"), ("y1", "50.0"), ("number", "10")]
         e = new_child(e_patch, name)
         set_content(e, value)
     end
