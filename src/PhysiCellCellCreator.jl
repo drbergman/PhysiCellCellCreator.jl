@@ -2,7 +2,7 @@ module PhysiCellCellCreator
 
 using LightXML, CSV, DataFrames, LinearAlgebra
 
-export createICCellXMLTemplate
+export generateICCell, createICCellXMLTemplate
 
 function generateICCell(path_to_ic_cell_xml::String, path_to_ic_cell_file::String, domain_dict::Dict{String,Float64})
     xml_doc = parse_file(path_to_ic_cell_xml)
