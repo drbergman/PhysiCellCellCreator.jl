@@ -73,6 +73,8 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       - name: Run doctests
         shell: julia --project=docs --color=yes {0}
+        env:
+          JULIA_DEBUG: Documenter
         run: |
           using Documenter: DocMeta, doctest
           using PhysiCellCellCreator
