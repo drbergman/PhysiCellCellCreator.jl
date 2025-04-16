@@ -35,7 +35,10 @@ struct AnnulusPatch end
 struct RectanglePatch end
 struct EverywherePatch end
 
+supportedPatchTypes() = ["disc", "annulus", "rectangle", "everywhere"]
+
 function patchType(patch_type::String)
+    @assert patch_type in supportedPatchTypes() "Patch type $(patch_type) is not supported. Supported types are: $(supportedPatchTypes())"
     if patch_type == "disc"
         return DiscPatch
     elseif patch_type == "annulus"
@@ -44,8 +47,6 @@ function patchType(patch_type::String)
         return RectanglePatch
     elseif patch_type == "everywhere"
         return EverywherePatch
-    else
-        throw(ArgumentError("Patch type $(patch_type) is not supported."))
     end
 end
 
